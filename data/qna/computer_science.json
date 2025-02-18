@@ -1,0 +1,552 @@
+[
+    {
+        "question": "Which data structure is MOST suitable for implementing a priority queue where the highest priority element needs to be accessed and removed efficiently?",
+        "answer": "Heap",
+        "options": {
+            "A": "Linked List",
+            "B": "Binary Search Tree",
+            "C": "Heap",
+            "D": "Hash Table"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is the worst-case time complexity of searching for an element in a balanced binary search tree with *n* nodes?",
+        "answer": "O(log n)",
+        "options": {
+            "A": "O(n)",
+            "B": "O(n log n)",
+            "C": "O(log n)",
+            "D": "O(1)"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which algorithm design paradigm is characterized by making locally optimal choices at each step with the hope of finding a global optimum?",
+        "answer": "Greedy Algorithm",
+        "options": {
+            "A": "Dynamic Programming",
+            "B": "Divide and Conquer",
+            "C": "Greedy Algorithm",
+            "D": "Backtracking"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is the primary advantage of using dynamic programming over a recursive approach for problems with overlapping subproblems?",
+        "answer": "Reduced time complexity by avoiding redundant computations.",
+        "options": {
+            "A": "Reduced space complexity.",
+            "B": "Simplified code structure.",
+            "C": "Reduced time complexity by avoiding redundant computations.",
+            "D": "Improved readability."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which sorting algorithm has an average-case and worst-case time complexity of O(n log n)?",
+        "answer": "Merge Sort",
+        "options": {
+            "A": "Bubble Sort",
+            "B": "Insertion Sort",
+            "C": "Quick Sort",
+            "D": "Merge Sort"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "In the context of graph algorithms, what does Dijkstra's algorithm compute?",
+        "answer": "Shortest paths from a source node to all other nodes in a weighted graph.",
+        "options": {
+            "A": "Minimum spanning tree of a graph.",
+            "B": "Maximum flow in a network.",
+            "C": "Shortest paths from a source node to all other nodes in a weighted graph.",
+            "D": "All connected components of a graph."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following is NOT a characteristic of a Red-Black Tree?",
+        "answer": "All leaves are at the same level.",
+        "options": {
+            "A": "Self-balancing binary search tree.",
+            "B": "Each node is either red or black.",
+            "C": "The root is always black.",
+            "D": "All leaves are at the same level."
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "What is the time complexity of the following code snippet?\n\n```python\ndef foo(n):\n  if n <= 1:\n    return 1\n  return foo(n-1) + foo(n-2)\n```",
+        "answer": "O(2^n)",
+        "options": {
+            "A": "O(n)",
+            "B": "O(n log n)",
+            "C": "O(n^2)",
+            "D": "O(2^n)"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "Which data structure follows the Last-In, First-Out (LIFO) principle?",
+        "answer": "Stack",
+        "options": {
+            "A": "Queue",
+            "B": "Stack",
+            "C": "Linked List",
+            "D": "Tree"
+        },
+        "answer_idx": "B"
+    },
+    {
+        "question": "What is the purpose of a Bloom filter?",
+        "answer": "To probabilistically test whether an element is a member of a set.",
+        "options": {
+            "A": "To sort elements in a set.",
+            "B": "To store elements in a set with perfect accuracy.",
+            "C": "To probabilistically test whether an element is a member of a set.",
+            "D": "To find the maximum element in a set."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which scheduling algorithm can lead to starvation?",
+        "answer": "Priority Scheduling",
+        "options": {
+            "A": "First-Come, First-Served (FCFS)",
+            "B": "Round Robin",
+            "C": "Shortest Job First (SJF)",
+            "D": "Priority Scheduling"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "What is the purpose of a Translation Lookaside Buffer (TLB)?",
+        "answer": "To cache page table entries, speeding up virtual-to-physical address translation.",
+        "options": {
+            "A": "To store frequently accessed data, reducing the need for main memory access.",
+            "B": "To manage disk I/O operations.",
+            "C": "To cache page table entries, speeding up virtual-to-physical address translation.",
+            "D": "To store the operating system kernel."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following is NOT a characteristic of a RISC (Reduced Instruction Set Computer) architecture?",
+        "answer": "Variable-length instructions",
+        "options": {
+            "A": "Fixed-length instructions",
+            "B": "Large number of general-purpose registers",
+            "C": "Load/store architecture",
+            "D": "Variable-length instructions"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "What is the purpose of the operating system's kernel?",
+        "answer": "To manage the system's resources and provide an interface for applications.",
+        "options": {
+            "A": "To provide a graphical user interface.",
+            "B": "To execute user applications directly.",
+            "C": "To manage the system's resources and provide an interface for applications.",
+            "D": "To store user data."
+        },
+        "answer_idx": "C"
+    },
+    {
+       "question": "Which memory management technique can lead to external fragmentation?",
+        "answer": "Segmentation",
+        "options": {
+            "A": "Paging",
+            "B": "Segmentation",
+            "C": "Demand Paging",
+            "D": "Swapping"
+        },
+        "answer_idx": "B"
+    },
+    {
+        "question": "What is the purpose of a system call?",
+        "answer": "To provide an interface for user programs to request services from the operating system.",
+        "options": {
+            "A": "To execute user applications directly.",
+            "B": "To manage hardware devices.",
+            "C": "To provide an interface for user programs to request services from the operating system.",
+            "D": "To optimize program performance."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is 'cache coherence' in the context of multiprocessor systems?",
+        "answer": "Ensuring that all caches have a consistent view of shared memory.",
+        "options": {
+            "A": "The process of organizing data in a cache.",
+            "B": "Ensuring that all caches have a consistent view of shared memory.",
+            "C": "A technique for optimizing cache performance.",
+            "D": "The speed at which data can be accessed from the cache."
+        },
+        "answer_idx": "B"
+    },
+    {
+        "question": "What is the function of an MMU (Memory Management Unit) in a computer system?",
+        "answer": "To translate virtual addresses to physical addresses.",
+        "options": {
+            "A": "To manage input/output devices.",
+            "B": "To execute instructions.",
+            "C": "To translate virtual addresses to physical addresses.",
+            "D": "To store the operating system kernel."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following is NOT a common component of a CPU?",
+        "answer": "Hard Disk Drive",
+        "options": {
+            "A": "Arithmetic Logic Unit (ALU)",
+            "B": "Control Unit (CU)",
+            "C": "Registers",
+            "D": "Hard Disk Drive"
+        },
+        "answer_idx": "D"
+    },
+    {
+       "question": "Which I/O technique uses a dedicated processor to handle I/O operations, freeing the CPU for other tasks?",
+        "answer": "Direct Memory Access (DMA)",
+        "options": {
+            "A": "Programmed I/O",
+            "B": "Interrupt-driven I/O",
+            "C": "Direct Memory Access (DMA)",
+            "D": "Polling"
+        },
+        "answer_idx": "C"
+    },
+ {
+        "question": "Which normal form is primarily concerned with eliminating redundant data based on functional dependencies?",
+        "answer": "Third Normal Form (3NF)",
+        "options": {
+            "A": "First Normal Form (1NF)",
+            "B": "Second Normal Form (2NF)",
+            "C": "Third Normal Form (3NF)",
+            "D": "Boyce-Codd Normal Form (BCNF)"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What does the ACID acronym stand for in the context of database transactions?",
+        "answer": "Atomicity, Consistency, Isolation, Durability",
+        "options": {
+            "A": "Accuracy, Completeness, Integrity, Durability",
+            "B": "Atomicity, Consistency, Isolation, Durability",
+            "C": "Availability, Concurrency, Integrity, Dependability",
+            "D": "Accessibility, Consistency, Isolation, Dependability"
+        },
+        "answer_idx": "B"
+    },
+    {
+        "question": "Which of the following is NOT a typical characteristic of a NoSQL database?",
+        "answer": "Strict adherence to ACID properties",
+        "options": {
+            "A": "Schema-less or flexible schema",
+            "B": "Horizontal scalability",
+            "C": "Distributed architecture",
+            "D": "Strict adherence to ACID properties"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "What is the purpose of a database index?",
+        "answer": "To speed up data retrieval operations.",
+        "options": {
+            "A": "To enforce data integrity constraints.",
+            "B": "To provide data security.",
+            "C": "To speed up data retrieval operations.",
+            "D": "To back up the database."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which SQL clause is used to sort the result set of a query?",
+        "answer": "ORDER BY",
+        "options": {
+            "A": "SORT BY",
+            "B": "GROUP BY",
+            "C": "ORDER BY",
+            "D": "HAVING"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "In relational database terminology, what is a 'foreign key'?",
+        "answer": "A field in one table that refers to the primary key of another table.",
+        "options": {
+            "A": "A unique identifier for a record in a table.",
+            "B": "A field that can contain only numeric data.",
+            "C": "A field in one table that refers to the primary key of another table.",
+            "D": "A field that cannot contain null values."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is the main advantage of a distributed database over a centralized database?",
+        "answer": "Improved scalability and availability",
+        "options": {
+            "A": "Simpler data management",
+            "B": "Lower cost",
+            "C": "Improved scalability and availability",
+            "D": "Stronger data consistency guarantees"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following is a characteristic of data warehouses?",
+        "answer": "Optimized for analytical queries (OLAP).",
+        "options": {
+           "A": "Optimized for transactional processing (OLTP).",
+            "B": "Stores only current data.",
+            "C": "Optimized for analytical queries (OLAP).",
+            "D": "Uses a schema-less data model."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What does 'two-phase commit' (2PC) ensure in a distributed database system?",
+        "answer": "Atomic commitment of transactions across multiple nodes.",
+        "options": {
+            "A": "Faster query execution.",
+            "B": "Improved data security.",
+            "C": "Atomic commitment of transactions across multiple nodes.",
+            "D": "Simplified data modeling."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following best describes the concept of 'data independence' in database systems?",
+        "answer": "The ability to change the schema at one level without affecting other levels.",
+        "options": {
+            "A": "Storing data on multiple servers.",
+            "B": "The ability to change the schema at one level without affecting other levels.",
+            "C": "Ensuring data is not duplicated.",
+            "D": "Protecting data from unauthorized access."
+        },
+        "answer_idx": "B"
+    },
+    {
+        "question": "What is the primary purpose of a thread pool in concurrent programming?",
+        "answer": "To reuse threads and reduce the overhead of thread creation and destruction.",
+        "options": {
+            "A": "To prevent race conditions.",
+            "B": "To ensure mutual exclusion.",
+            "C": "To reuse threads and reduce the overhead of thread creation and destruction.",
+            "D": "To simplify inter-thread communication."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following is NOT a characteristic of the Actor model of concurrency?",
+        "answer": "Shared mutable state between actors",
+        "options": {
+            "A": "Asynchronous message passing",
+            "B": "Encapsulated state within each actor",
+            "C": "Shared mutable state between actors",
+            "D": "Actors can create other actors"
+        },
+        "answer_idx": "C"
+    },
+    {
+      "question": "Which of the following is a potential problem in concurrent programming where two or more processes are blocked indefinitely, waiting for each other to release resources?",
+        "answer": "Deadlock",
+        "options": {
+            "A": "Race Condition",
+            "B": "Starvation",
+            "C": "Deadlock",
+            "D": "Livelock"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What does Amdahl's Law describe?",
+        "answer": "The theoretical speedup achievable by parallelizing a program.",
+        "options": {
+            "A": "The optimal number of threads to use in a concurrent program.",
+            "B": "The theoretical speedup achievable by parallelizing a program.",
+            "C": "The probability of deadlock occurring in a concurrent system.",
+            "D": "The overhead of inter-process communication."
+        },
+        "answer_idx": "B"
+    },
+    {
+        "question": "Which synchronization primitive allows multiple threads to wait for a specific condition to become true before proceeding?",
+        "answer": "Condition Variable",
+        "options": {
+            "A": "Mutex",
+            "B": "Semaphore",
+            "C": "Condition Variable",
+            "D": "Spinlock"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is the main advantage of message passing over shared memory for inter-process communication?",
+        "answer": "Avoids race conditions by design.",
+        "options": {
+            "A": "Lower communication overhead.",
+            "B": "Simplified programming model.",
+            "C": "Avoids race conditions by design.",
+            "D": "Faster context switching."
+        },
+        "answer_idx": "C"
+    },
+    {
+      "question": "Which of the following best describes 'linearizability' in concurrent programming?",
+        "answer": "Each operation appears to take effect instantaneously at some point between its invocation and completion.",
+        "options": {
+            "A": "Operations execute in the order they are invoked.",
+            "B": "Operations from different threads are never interleaved.",
+            "C": "Each operation appears to take effect instantaneously at some point between its invocation and completion.",
+            "D": "All threads see the same order of operations."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is the purpose of a 'compare-and-swap' (CAS) operation in concurrent programming?",
+        "answer": "To atomically update a memory location if its current value matches an expected value.",
+        "options": {
+            "A": "To lock a resource for exclusive access.",
+            "B": "To signal a waiting thread.",
+            "C": "To atomically update a memory location if its current value matches an expected value.",
+            "D": "To create a new thread."
+        },
+        "answer_idx": "C"
+    },
+    {
+       "question": "Which parallel programming model is commonly used for programming GPUs?",
+        "answer": "CUDA/OpenCL",
+        "options": {
+            "A": "OpenMP",
+            "B": "MPI",
+            "C": "Pthreads",
+            "D": "CUDA/OpenCL"
+        },
+        "answer_idx": "D"
+    },
+ {
+        "question": "What is 'work stealing' in the context of parallel computing?",
+        "answer": "A scheduling strategy where idle processors take tasks from busy processors.",
+        "options": {
+             "A": "A technique for synchronizing threads.",
+            "B": "A method for partitioning data among processors.",
+            "C": "A scheduling strategy where idle processors take tasks from busy processors.",
+            "D": "A type of parallel algorithm."
+        },
+        "answer_idx": "C"
+    },
+  {
+        "question": "Which architectural style is MOST characterized by independent, self-deployable services communicating over a network?",
+        "answer": "Microservices Architecture",
+        "options": {
+            "A": "Layered Architecture",
+            "B": "Pipe-and-Filter Architecture",
+            "C": "Microservices Architecture",
+            "D": "Blackboard Architecture"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "The '4+1' view model of software architecture includes all of the following views EXCEPT:",
+        "answer": "Security View",
+        "options": {
+            "A": "Logical View",
+            "B": "Development View",
+            "C": "Process View",
+            "D": "Security View"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "In a microservices architecture, which pattern helps to prevent a single service failure from cascading to other services?",
+        "answer": "Circuit Breaker",
+        "options": {
+            "A": "Singleton",
+            "B": "Factory",
+            "C": "Circuit Breaker",
+            "D": "Observer"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following is NOT a key principle of Domain-Driven Design (DDD) often used in microservices decomposition?",
+        "answer": "Global Data Repository",
+        "options": {
+            "A": "Ubiquitous Language",
+            "B": "Bounded Contexts",
+            "C": "Aggregates",
+            "D": "Global Data Repository"
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "Which architectural analysis method focuses on identifying and mitigating architectural risks by eliciting quality attribute scenarios and analyzing architectural approaches?",
+        "answer": "Architecture Tradeoff Analysis Method (ATAM)",
+        "options": {
+            "A": "Waterfall Model",
+            "B": "Agile Development",
+            "C": "Architecture Tradeoff Analysis Method (ATAM)",
+            "D": "Code Review"
+        },
+        "answer_idx": "C"
+    },
+ {
+        "question": "Which of the following best describes an event-driven architecture?",
+        "answer": "Components communicate through asynchronous publication and subscription to events.",
+        "options": {
+            "A": "Components communicate through direct method calls.",
+            "B": "Components communicate through synchronous requests and responses.",
+            "C": "Components communicate through shared memory.",
+            "D": "Components communicate through asynchronous publication and subscription to events."
+        },
+        "answer_idx": "D"
+    },
+    {
+        "question": "What is the primary purpose of an API gateway in a microservices architecture?",
+        "answer": "To provide a single entry point for external clients to access the services.",
+        "options": {
+            "A": "To manage inter-service communication.",
+            "B": "To store data for all services.",
+            "C": "To provide a single entry point for external clients to access the services.",
+            "D": "To perform data transformations."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which architectural style organizes an application into distinct horizontal layers, each with a specific responsibility?",
+        "answer": "Layered Architecture",
+        "options": {
+            "A": "Microservices Architecture",
+            "B": "Event-Driven Architecture",
+            "C": "Layered Architecture",
+            "D": "Client-Server Architecture"
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "What is 'architectural drift'?",
+        "answer": "The divergence between the intended architecture and the implemented architecture.",
+        "options": {
+            "A": "The gradual degradation of code quality over time.",
+            "B": "The process of refactoring an architecture.",
+            "C": "The divergence between the intended architecture and the implemented architecture.",
+            "D": "The use of multiple architectural styles in a system."
+        },
+        "answer_idx": "C"
+    },
+    {
+        "question": "Which of the following quality attributes is MOST directly addressed by using a microservices architecture?",
+        "answer": "Scalability",
+        "options": {
+            "A": "Usability",
+            "B": "Portability",
+            "C": "Scalability",
+            "D": "Security"
+        },
+        "answer_idx": "C"
+    }
+]
