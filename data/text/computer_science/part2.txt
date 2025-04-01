@@ -1,0 +1,180 @@
+# Part2: Operating Systems and Computer Architecture
+
+I. Computer Architecture (Advanced)
+
+Chapter 1: Instruction Set Architecture (ISA) Design and Evaluation
+
+- 1.1 ISA Principles and Tradeoffs:
+    - 1.1.1 Design Goals: Performance, cost, power consumption, programmability, compatibility.
+    - 1.1.2 Instruction Formats: Fixed-length vs. variable-length, encoding efficiency, addressing modes.
+    - 1.1.3 Operand Types and Sizes: Integer, floating-point, vector, addressing modes (register, immediate, displacement, indexed, etc.).
+    - 1.1.4 Instruction Types: Arithmetic, logical, data transfer, control flow, system instructions.
+    - 1.1.5 RISC vs. CISC vs. VLIW: Philosophical differences, advantages and disadvantages of each approach, historical context and modern trends.
+    - 1.1.6 Custom Instructions and Accelerators: Designing application-specific instructions, hardware/software co-design.
+- 1.2 Quantitative Performance Evaluation:
+    - 1.2.1 Performance Metrics: CPI (cycles per instruction), IPC (instructions per cycle), execution time, throughput, latency.
+    - 1.2.2 Benchmarks: SPEC, TPC, EEMBC, synthetic benchmarks. Limitations of benchmarks.
+    - 1.2.3 Performance Analysis Tools: Simulators (cycle-accurate, trace-driven), profilers, performance counters.
+    - 1.2.4 Amdahl's Law and Gustafson's Law: Understanding the limits of parallelization.
+- 1.3 Advanced ISA Features:
+    - 1.3.1 SIMD (Single Instruction, Multiple Data): Vector instructions, data parallelism. Examples: SSE, AVX, NEON.
+    - 1.3.2 Predication: Conditional execution of instructions, reducing branch mispredictions.
+    - 1.3.3 Speculative Execution: Executing instructions before their control dependencies are resolved, handling exceptions.
+    - 1.3.4 Transactional Memory: Hardware support for atomic operations on memory.
+    - 1.3.5 Security Extensions: SGX (Software Guard Extensions), TrustZone.
+
+Chapter 2: Processor Microarchitecture: Beyond Pipelining
+
+- 2.1 Pipelining Review: Stages, hazards (structural, data, control), forwarding, stalling, branch prediction.
+- 2.2 Superscalar Execution:
+    - 2.2.1 Instruction-Level Parallelism (ILP): Exploiting parallelism within a single instruction stream.
+    - 2.2.2 Instruction Fetch and Decode: Fetching multiple instructions per cycle, handling variable-length instructions.
+    - 2.2.3 Register Renaming: Eliminating false data dependencies (WAR and WAW hazards).
+    - 2.2.4 Out-of-Order Execution: Dynamic scheduling, Tomasulo's algorithm, reservation stations, reorder buffer (ROB).
+    - 2.2.5 Precise Exceptions: Maintaining program state in the presence of out-of-order execution and exceptions.
+- 2.3 Advanced Branch Prediction:
+    - 2.3.1 Static vs. Dynamic Prediction: Compiler-based vs. hardware-based prediction.
+    - 2.3.2 Branch Target Buffer (BTB): Predicting the target address of branches.
+    - 2.3.3 Two-Level Adaptive Predictors: Combining global and local history.
+    - 2.3.4 Correlated Predictors: Using the history of multiple branches to predict the outcome of a branch.
+    - 2.3.5 Neural Branch Predictors: Using machine learning techniques for branch prediction.
+- 2.4 Memory Hierarchy Design:
+    - 2.4.1 Cache Coherence Protocols (Advanced): MESI, MOESI, directory-based protocols, scalability issues.
+    - 2.4.2 Cache Replacement Policies (Advanced): LRU, pseudo-LRU, adaptive replacement policies.
+    - 2.4.3 Non-Blocking Caches: Allowing multiple outstanding cache misses.
+    - 2.4.4 Prefetching: Hardware and software prefetching techniques, reducing memory latency.
+    - 2.4.5 Victim Caches and Stream Buffers: Improving cache performance for specific access patterns.
+- 2.5 Power and Energy Efficiency:
+    - 2.5.1 Dynamic Voltage and Frequency Scaling (DVFS): Adapting processor voltage and frequency to reduce power consumption.
+    - 2.5.2 Clock Gating: Disabling clocks to idle parts of the processor.
+    - 2.5.3 Power-Aware Design Techniques: Architectural and circuit-level techniques for reducing power consumption.
+
+Chapter 3: Parallel Architectures
+
+- 3.1 Flynn's Taxonomy Revisited: SISD, SIMD, MISD, MIMD. Modern interpretations and extensions.
+- 3.2 Shared Memory Multiprocessors (SMPs):
+    - 3.2.1 Symmetric Multiprocessing: Uniform memory access (UMA) vs. non-uniform memory access (NUMA).
+    - 3.2.2 Cache Coherence Protocols (Detailed): Snooping protocols, directory-based protocols, scalability considerations.
+    - 3.2.3 Synchronization Primitives: Locks, semaphores, barriers, transactional memory.
+    - 3.2.4 Memory Consistency Models: Sequential consistency, relaxed consistency models (weak ordering, release consistency).
+- 3.3 Distributed Memory Multicomputers:
+    - 3.3.1 Interconnection Networks: Topologies (mesh, torus, hypercube, fat tree), routing algorithms, performance characteristics.
+    - 3.3.2 Message Passing: MPI (Message Passing Interface), communication patterns, collective operations.
+    - 3.3.3 Distributed Shared Memory (DSM): Providing a shared memory abstraction on top of a distributed memory system.
+- 3.4 Graphics Processing Units (GPUs):
+    - 3.4.1 GPU Architecture: Streaming multiprocessors (SMs), thread blocks, warps, memory hierarchy (global, shared, local).
+    - 3.4.2 CUDA and OpenCL: Programming models for GPUs.
+    - 3.4.3 GPU Computing: Applications of GPUs in scientific computing, machine learning, and other areas.
+- 3.5 Data-Level Parallelism:
+    - 3.5.1 Vector Processors
+    - 3.5.2 SIMD Extensions
+    - 3.5.3 Systolic Arrays
+- 3.6 Manycore and Heterogeneous Architectures:
+    - 3.6.1 Challenges of Scaling to Hundreds or Thousands of Cores: Power consumption, communication bottlenecks, programming complexity.
+    - 3.6.2 Heterogeneous Systems: Combining different types of processing units (CPUs, GPUs, FPGAs, specialized accelerators) on a single chip or system.
+    - 3.6.3 On-Chip Networks (NoCs): Interconnecting cores on a manycore processor.
+
+II. Operating Systems (Advanced)
+
+Chapter 4: Concurrency and Synchronization (Advanced)
+
+- 4.1 Review of Concurrency Concepts: Processes, threads, mutual exclusion, semaphores, monitors, condition variables.
+- 4.2 Deadlock:
+    - 4.2.1 Deadlock Conditions: Mutual exclusion, hold and wait, no preemption, circular wait.
+    - 4.2.2 Deadlock Prevention: Designing systems to avoid one or more of the deadlock conditions.
+    - 4.2.3 Deadlock Avoidance: Using resource allocation algorithms (e.g., Banker's algorithm) to avoid unsafe states.
+    - 4.2.4 Deadlock Detection and Recovery: Detecting deadlocks and recovering from them (e.g., process termination, resource preemption).
+- 4.3 Advanced Synchronization Primitives:
+    - 4.3.1 Read-Copy-Update (RCU): A synchronization mechanism that allows readers to access data without locking, while updates are performed by copying and modifying the data.
+    - 4.3.2 Lock-Free and Wait-Free Data Structures: Implementing data structures without using locks, ensuring progress guarantees.
+    - 4.3.3 Transactional Memory (Software and Hardware): Providing atomic operations on memory, simplifying concurrent programming.
+- 4.4 Concurrency Bugs and Debugging:
+    - 4.4.1 Common Concurrency Bugs: Data races, deadlocks, livelocks, priority inversion.
+    - 4.4.2 Debugging Techniques: Using debuggers, static analysis tools, model checking, runtime verification.
+- 4.5 Formal Verification of Concurrent Systems:
+    - 4.5.1 Model Checking
+    - 4.5.2 Theorem Proving
+
+Chapter 5: Memory Management (Advanced)
+
+- 5.1 Review of Virtual Memory: Paging, segmentation, address translation, TLBs, page tables.
+- 5.2 Page Replacement Algorithms (Advanced):
+    - 5.2.1 Optimal Page Replacement (OPT/MIN): Theoretical analysis, impracticality.
+    - 5.2.2 LRU Approximations: Clock algorithm, second-chance algorithm, working set algorithm.
+    - 5.2.3 Adaptive Replacement Policies: ARC (Adaptive Replacement Cache), CAR (Clock with Adaptive Replacement).
+- 5.3 Memory Allocation Strategies:
+    - 5.3.1 Buddy System: Allocating memory in blocks of powers of 2.
+    - 5.3.2 Slab Allocation: Allocating objects of the same size from pre-allocated slabs.
+    - 5.3.3 Memory Pools: Managing pools of fixed-size memory blocks.
+- 5.4 Large Memory Systems:
+    - 5.4.1 NUMA (Non-Uniform Memory Access): Managing memory in systems with non-uniform access times.
+    - 5.4.2 Memory Management in Distributed Systems: Distributed shared memory, remote memory access.
+- 5.5 Memory Protection and Security:
+    - 5.5.1 Hardware Support for Memory Protection: Segmentation, paging, capabilities.
+    - 5.5.2 Address Space Layout Randomization (ASLR): Mitigating buffer overflow attacks.
+    - 5.5.3 Data Execution Prevention (DEP): Preventing code execution from data regions.
+
+Chapter 6: File Systems and Storage (Advanced)
+
+- 6.1 File System Design Principles:
+    - 6.1.1 Naming and Directory Structures: Hierarchical file systems, symbolic links, hard links.
+    - 6.1.2 File Allocation Methods: Contiguous allocation, linked allocation, indexed allocation, extent-based allocation.
+    - 6.1.3 Free Space Management: Bitmaps, linked lists, extent lists.
+    - 6.1.4 Metadata Management: Storing file attributes, access control lists, timestamps.
+- 6.2 Journaling and Log-Structured File Systems:
+    - 6.2.1 Journaling File Systems: Using a log to record file system updates, ensuring consistency in case of crashes.
+    - 6.2.2 Log-Structured File Systems (LFS): Writing all data and metadata sequentially to a log, optimizing for write performance.
+- 6.3 Distributed File Systems:
+    - 6.3.1 NFS (Network File System): A widely used distributed file system protocol.
+    - 6.3.2 AFS (Andrew File System): A distributed file system with caching and scalability features.
+    - 6.3.3 GFS (Google File System) and HDFS (Hadoop Distributed File System): File systems designed for large-scale data storage and processing.
+- 6.4 Storage Devices (Advanced):
+    - 6.4.1 Magnetic Disks: Disk scheduling algorithms (FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK).
+    - 6.4.2 Solid-State Drives (SSDs): Flash memory, wear leveling, garbage collection, TRIM command.
+    - 6.4.3 RAID (Redundant Array of Independent Disks): RAID levels (0, 1, 5, 6, 10), performance and reliability tradeoffs.
+    - 6.4.4 Emerging Storage Technologies: Non-volatile memory (NVM), phase-change memory (PCM), memristors.
+
+Chapter 7: Virtualization and Cloud Computing
+
+- 7.1 Virtualization Concepts
+    - 7.1.1 Types of Virtualization: Full virtualization, paravirtualization, OS-level virtualization (containers).
+    - 7.1.2 Hypervisors: Type 1 (bare-metal) and Type 2 (hosted) hypervisors.
+    - 7.1.3 Hardware Support for Virtualization: Intel VT-x, AMD-V.
+- 7.2 Virtual Machine Management
+- 7.3 Cloud Computing Models:
+    - 7.3.1 Infrastructure as a Service (IaaS): Providing virtualized computing resources (VMs, storage, networks).
+    - 7.3.2 Platform as a Service (PaaS): Providing a platform for developing and deploying applications.
+    - 7.3.3 Software as a Service (SaaS): Providing applications over the network.
+- 7.4 Cloud Resource Management:
+    - 7.4.1 Virtual Machine Scheduling: Allocating VMs to physical servers, load balancing, resource provisioning.
+    - 7.4.2 Cloud Storage: Object storage, block storage, distributed file systems.
+    - 7.4.3 Cloud Networking: Virtual networks, software-defined networking (SDN).
+
+Chapter 8: Operating System Security
+
+- 8.1 Security Threats and Attacks: Viruses, worms, Trojan horses, rootkits, denial-of-service (DoS) attacks, buffer overflows, code injection.
+- 8.2 Access Control:
+    - 8.2.1 Discretionary Access Control (DAC): Access control based on user identity and permissions.
+    - 8.2.2 Mandatory Access Control (MAC): Access control based on security labels and policies.
+    - 8.2.3 Role-Based Access Control (RBAC): Access control based on user roles.
+- 8.3 Authentication and Authorization:
+    - 8.3.1 Passwords, Biometrics, Multi-factor Authentication
+- 8.4 Operating System Hardening:
+    - 8.4.1 Minimizing Attack Surface: Disabling unnecessary services, using firewalls.
+    - 8.4.2 Secure Configuration: Setting appropriate security settings, using security auditing tools.
+    - 8.4.3 Intrusion Detection and Prevention: Using intrusion detection systems (IDS) and intrusion prevention systems (IPS).
+- 8.5 Trusted Computing:
+    - 8.5.1 Trusted Platform Module (TPM)
+    - 8.5.2 Secure Boot
+
+Chapter 9: Distributed Systems Fundamentals
+
+- 9.1 Characteristics of Distributed Systems: Concurrency, lack of global clock, independent failures.
+- 9.2 Communication Models: Message passing, remote procedure call (RPC), distributed objects.
+- 9.3 Distributed Consensus:
+    - 9.3.1 The Problem of Consensus: Reaching agreement among distributed processes in the presence of failures.
+    - 9.3.2 Paxos and Raft: Popular consensus algorithms.
+- 9.4 Fault Tolerance:
+    - 9.4.1 Failure Models: Crash failures, Byzantine failures.
+    - 9.4.2 Replication: Replicating data and services to tolerate failures.
+    - 9.4.3 Checkpointing and Recovery.
