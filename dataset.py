@@ -44,6 +44,7 @@ class QuestionAnswering:
                 dataset = dataset.map(lambda example: {**example, "subject": subject})
                 all_datasets.append(dataset)
             test_dataset = concatenate_datasets(all_datasets)
+            test_dataset = test_dataset.shuffle(seed=42).select(range(1000))
             return test_dataset
 
         elif self.dataset_type == "MedQA":
@@ -79,8 +80,8 @@ class QuestionAnswering:
             df.rename(columns={"choices":"options"}, inplace=True)
             df['answer'] = df['answer'].map(ANSWER_MAPPING_DICT)
         
-        # elif self.dataset_type == "MedQuad":
-        #     df.rename(columns={"Question": "question", "Answer":"answer"}, inplace=True)
+        elif self.dataset_type == "MedQuad":
+            df.rename(columns={"Question": "question", "Answer":"answer"}, inplace=True)
         
         self.qa_df = df
         return self.qa_df
