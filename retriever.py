@@ -10,26 +10,35 @@ from transformers import AutoModel, AutoTokenizer
 from rank_bm25 import BM25Okapi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+# import nltk
+# nltk.download('punkt')
+from nltk.tokenize import sent_tokenize
+# _ = sent_tokenize(".") # force initialize punkt tokenizer
+
 class MyRetriever:
     def __init__(
             self,
             raw_data_path:str="",
             retriever_type:str="contriever",
-            chunk_size:int=256,
-            device:str="cuda"
+            chunk_size:int=None,
+            granularity:str="chunk",
+            # device:str="cuda",
         ):
 
         self.raw_data_path = raw_data_path
         self.retriever_type = retriever_type
-        if retriever_type == 'domain_detector':
-            self.chunk_size = None
-        else:
-            self.chunk_size = chunk_size
-        self.device = device
+        self.chunk_size = chunk_size
+        self.granularity = granularity # "chunk", "sentence"
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size,
+            chunk_overlap=50,
+            length_function=len
+        )
         self.texts = self._load_dataset()
-
-        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+        self.reranker = CrossEncoder("nboost/pt-biobert-base-msmarco")
+        # self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
         
         # Dense - Contriever, MedCPT, Specter, RRF-2
         if self.retriever_type in ["contriever", "specter", "longformer", "medcpt", "rrf2"]:
@@ -110,7 +119,7 @@ class MyRetriever:
                     with open(file_path, "r", encoding="utf-8") as f:
                         text = f.read().strip()
                         if self.chunk_size is not None:
-                            texts.extend(self._split_text(text, self.chunk_size))
+                            texts.extend(self._split_text(text))
                         else:
                             texts.append(text)  # Add the entire text as a single element
 
@@ -121,7 +130,7 @@ class MyRetriever:
 
         if self.chunk_size is not None:
             concatenated_text = " ".join(texts)
-            texts = self._split_text(concatenated_text, self.chunk_size)
+            texts = self._split_text(concatenated_text)
         # print(f"Loaded {len(texts)} documents from directory: {self.raw_data_path}")
         return texts
 
@@ -146,13 +155,10 @@ class MyRetriever:
         sorted_results = sorted(combined_scores.items(), key=lambda x: x[1], reverse=True)
         return sorted_results
     
-    def _split_text(self, texts, chunk_size, chunk_overlap=50):
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-            length_function=len
-        )
-        return text_splitter.split_text(texts)
+    def _split_text(self, texts):
+        if self.granularity == "sentence":
+            return sent_tokenize(texts)
+        return self.text_splitter.split_text(texts)
 
     def search(self, query:str, k:int=5, rerank:bool=False):
         retrieved_docs = None
@@ -167,13 +173,23 @@ class MyRetriever:
             bm25_results = self._get_bm25_results(query)
             retrieved_docs = self._ensemble_scores((faiss_results, 0.5), (bm25_results, 0.5))[:k]
         else:
-            raise ValueError("Invalid retriever type. Choose from ['contriever', 'specter', 'medcpt', 'bm25', 'rrf2']")
+            retrieved_docs = self._get_dense_results(query, k=k)
+
         if rerank:
-            retrieved_docs = self.rerank(query, retrieved_docs, self.reranker, top_n=2) # top_n = final value of k
+            retrieved_docs = self.rerank(query, retrieved_docs, top_n=2) # top_n = final value of k
         return retrieved_docs
     
-    def rerank(self, question, docs, reranker, top_n=2):
+    def rerank(self, question, docs, top_n=2):
+        # all_chunks = []
+        # for doc in docs:
+        #     text = doc.page_content if hasattr(doc, 'page_content') else doc[0]
+        #     if len(text) > self.chunk_size:
+        #         chunks = self.text_splitter.split_text(text)
+        #     else: 
+        #         chunks = [text]
+        #     all_chunks.extend(chunks)
         pairs = [(question, doc.page_content if hasattr(doc, 'page_content') else doc[0]) for doc in docs]
-        scores = reranker.predict(pairs)
+        # pairs = [(question, chunk) for chunk in all_chunks]
+        scores = self.reranker.predict(pairs).tolist()
         scored_docs = sorted(zip(docs, scores), key=lambda x: x[1], reverse=True)
         return [d[0] for d in scored_docs[:top_n]]
