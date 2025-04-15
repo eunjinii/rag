@@ -1,20 +1,23 @@
-# Concise Knowledge-Guided cRAG
+# Concise Knowledge-Guided RAG
 
 ## Overview
 Concise Knowledge-Guided Retrieval-Augmented Generation (cRAG) enhances response generation by integrating a retrieval component with a knowledge-guided filtering approach. This ensures that generated responses are relevant, concise, and knowledge-driven.
 
 ## How to Run
-1. **Launch Jupyter Notebook**  
-   Open and run the `rag.ipynb` notebook using:
-   ```bash
-   jupyter notebook rag.ipynb
-   ```
-   or
-   ```bash
-   jupyter lab rag.ipynb
-   ```
 
-2. **Modify Configuration (Optional)**  
-   - Adjust retrieval settings (BM25/FAISS)  
-   - Tune ranking models  
-   - Experiment with knowledge-guided filtering
+   Run Ollama server and pull models using:
+   ```bash
+   $ ollama serve
+   $ ollama pull llama3.2:1b
+   $ ollama pull gemma:7b
+   ```
+   Run evaluation
+   ```bash
+   $ conda activate rag
+   $ python evaluate.py --dataset_name MMLU --k 2 --chunk_size 512
+   ```
+   or for multi-GPU inference,
+   ```bash
+   $ conda activate rag
+   $ python evaluate_parallel.py --dataset_name MMLU --k 2 --chunk_size 512
+   ```

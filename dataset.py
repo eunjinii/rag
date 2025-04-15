@@ -1,5 +1,6 @@
 from datasets import load_dataset, concatenate_datasets
 import pandas as pd
+import sys
 
 class QuestionAnswering:
     def __init__(self, dataset_type):
@@ -10,7 +11,6 @@ class QuestionAnswering:
             "MMLU": "cais/mmlu", # 4 chioces
             "MedQuad": "keivalya/MedQuad-MedicalQnADataset", # short answer
             # "MedTrans": "tchebonenko/MedicalTranscriptions",
-            # "MedKeywords": "argilla/medical-keywords"
         }
 
         assert dataset_type in DATASET_DICT, "Invalid dataset type"
@@ -44,7 +44,7 @@ class QuestionAnswering:
                 dataset = dataset.map(lambda example: {**example, "subject": subject})
                 all_datasets.append(dataset)
             test_dataset = concatenate_datasets(all_datasets)
-            test_dataset = test_dataset.shuffle(seed=42).select(range(1000))
+            test_dataset = test_dataset.shuffle(seed=42).select(range(500))
             return test_dataset
 
         elif self.dataset_type == "MedQA":
@@ -79,6 +79,8 @@ class QuestionAnswering:
         elif self.dataset_type == "MMLU":
             df.rename(columns={"choices":"options"}, inplace=True)
             df['answer'] = df['answer'].map(ANSWER_MAPPING_DICT)
+            print(df.head())
+            # sys.exit(0)
         
         elif self.dataset_type == "MedQuad":
             df.rename(columns={"Question": "question", "Answer":"answer"}, inplace=True)

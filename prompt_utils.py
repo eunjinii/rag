@@ -6,7 +6,8 @@ def run_simple_prompt(model, question, options=None):
     if options is None:
         template = '''You are an AI assistant for grad students.
         Answer the following question in concise sentences.
-        Question: {question}'''
+        Question: {question}
+        Answer: '''
     else:
         template = '''You are an AI assistant for grad students.
         Answer the question and select the most appropriate answer from the given choices.
@@ -30,21 +31,20 @@ def run_rag_chain(model, retriever, question, options=None, k=2, is_rerank=False
             return '\n\n'.join([d.page_content for d in docs])
         else:
             return '\n\n'.join([d[0] for d in docs])
+        """
+        You are an AI assistant for graduate students.
+        Use the provided documents to answer the question.
+        Answer the following question in concise sentences.
+        """
     
     if options is None:
         template = '''Here are the relevant documents: {context}
-        
-        You are an AI assistant for graduate students.
-        Use the provided context to answer the question.
         Answer the following question in concise sentences.
-
+        Use the provided documents to answer the question.
         Question: {question}
-
         Output only the answer. Do not provide any explanation.'''
     else:
         template = '''Here are the relevant documents: {context}
-        
-        You are an AI assistant for graduate students.
         Use the provided context to select the most accurate answer.
         Return only one letter (a, b, c, or d) with no additional text or explanation.
 
