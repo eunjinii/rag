@@ -2,6 +2,6 @@ mode: multiple_choice  # short_answer, multiple_choice
 dataset: MedMCQA  # MedMCQA, MMLU, etc.
 
 k: 2  # 2, 4, 8
-chunk: 512  # 256, 512, 1024
-gran: chunk  # chunk, sentence
+chunk_size: 512  # 256, 512, 1024
+granularity: chunk  # chunk, sentence
 rerank: false

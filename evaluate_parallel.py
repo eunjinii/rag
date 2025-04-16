@@ -5,7 +5,6 @@ import argparse
 import pandas as pd
 import multiprocessing as mp
 import numpy as np
-import ast 
 import sys
 import signal
 import yaml
@@ -20,8 +19,6 @@ from langchain_ollama import ChatOllama
 from retriever import MyRetriever
 from dataset import QuestionAnswering
 from prompt_utils import run_simple_prompt, run_rag_chain
-
-# from nltk.tokenize import sent_tokenize
 
 VISIBLE_GPUS = list(map(int, os.environ["CUDA_VISIBLE_DEVICES"].split(",")))
 
@@ -220,17 +217,9 @@ if __name__ == "__main__":
 
     config = load_config("config/mmlu_sa.yaml")
     args = Args(config)
+    print(f"Running with config: {args.__dict__}")
     
-    # parser = argparse.ArgumentParser(description="Evaluating the model.")
-    # parser.add_argument("--mode", type=str, choices=["multiple_choice", "short_answer"], default="multiple_choice")
-    # parser.add_argument("--dataset", choices=["MedMCQA", "MMLU"], type=str, required=True)
-    # parser.add_argument("--k", type=int, default=2)
-    # parser.add_argument("--chunk", type=int, default=512)
-    # parser.add_argument("--gran", type=str, default="chunk")
-    # parser.add_argument("--rerank", action="store_true")
-    # args = parser.parse_args()
-    
-    if args.gran == "sentence":
+    if args.granularity == "sentence":
         import nltk
         nltk.download('punkt_tab')
 
@@ -248,15 +237,15 @@ if __name__ == "__main__":
         args.mode,
         args.dataset,
         args.k,
-        args.chunk,
-        args.gran,
+        args.chunk_size,
+        args.granularity,
         args.rerank,
     )
 
     os.makedirs("result", exist_ok=True)
 
     timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
-    filename = f"{args.dataset}_{args.mode}_{args.k}_{args.chunk}_{args.gran}{'_rerank' if args.rerank else '_'}_{timestamp}.csv"
+    filename = f"{args.dataset}_{args.mode}_{args.k}_{args.chunk_size}_{args.granularity}{'_rerank' if args.rerank else '_'}_{timestamp}.csv"
     filepath = os.path.join("result", filename)
     results_df.to_csv(filepath, index=False)
 
