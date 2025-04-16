@@ -1,13 +1,11 @@
 import os
 import torch
 import time
-import argparse
 import pandas as pd
 import multiprocessing as mp
-import numpy as np
-import sys
 import signal
 import yaml
+import traceback
 
 from datetime import datetime
 from tqdm import tqdm
@@ -143,7 +141,8 @@ def evaluate_partition(samples, retriever_type, mode, dataset_name, tokenizer, k
 def evaluate(qna_df, retriever_types, mode, dataset_name, k=10, chunk_size=512, granularity="chunk", is_rerank=False):
     results = []
     num_gpus = len(VISIBLE_GPUS)
-    qna_chunks = np.array_split(qna_df, num_gpus)
+    qna_chunk_size = (len(qna_df) + num_gpus - 1) // num_gpus
+    qna_chunks = [qna_df.iloc[i*qna_chunk_size : (i+1)*qna_chunk_size] for i in range(num_gpus)]
 
     for retriever_type in retriever_types:
         print(f"\n{retriever_type.upper()} Processing...")
@@ -152,28 +151,42 @@ def evaluate(qna_df, retriever_types, mode, dataset_name, k=10, chunk_size=512, 
         return_list = manager.list()
         jobs = []
 
-        for i in range(num_gpus):
-            p = mp.Process(target=evaluate_partition, args=(
-                qna_chunks[i], retriever_type, mode, dataset_name,
-                bert_tokenizer, k, chunk_size, granularity, is_rerank, return_list, VISIBLE_GPUS[i]))
-            p.start()
-            jobs.append(p)
+        try:
+            for i in range(num_gpus):
+                p = mp.Process(target=evaluate_partition, args=(
+                    qna_chunks[i], retriever_type, mode, dataset_name,
+                    bert_tokenizer, k, chunk_size, granularity, is_rerank, return_list, VISIBLE_GPUS[i]))
+                p.start()
+                jobs.append(p)
 
-        for p in jobs:
-            p.join()
+            for p in jobs:
+                p.join()
+        
+        except Exception as e:
+            print(f"\n[ERROR] Exception occurred during evaluation of {retriever_type}: {e}")
+            traceback.print_exc()
+
+            for p in jobs:
+                p.terminate()
+            for p in jobs:
+                p.join()
+
+            continue
 
         eval_mode = return_list[0]["mode"]
         all_times = sum([r["times"] for r in return_list], [])
         avg_time = sum(all_times) / len(all_times)
 
         if eval_mode == "multiple_choice":
+            total_samples = sum(len(r["times"]) for r in return_list)
             total_correct = sum([r["correct"] for r in return_list])
-            acc = total_correct / len(return_list) * 100
+            acc = total_correct / total_samples * 100
             results.append({
-                "Retriever": retriever_type.upper(),
-                # "Rerank": is_rerank,
+                "Retriever": retriever_type.lower(),
+                "Rerank": is_rerank,
+                "TopK": k,
                 "Granularity": granularity,
-                "TopK (Chunk)": f"{k} ({chunk_size if granularity == 'chunk' else '-'})",
+                "Chunk": f"{chunk_size}" if granularity == "chunk" else "",
                 "Accuracy (%)": f"{acc:.2f}",
                 "Time (s)": f"{avg_time:.4f}",
             })
@@ -187,10 +200,11 @@ def evaluate(qna_df, retriever_types, mode, dataset_name, k=10, chunk_size=512, 
             mean_em = sum(s["EM"] for s in all_scores) / len(all_scores)
 
             results.append({
-                "Retriever": retriever_type.upper(),
-                # "Rerank": is_rerank,
+                "Retriever": retriever_type.lower(),
+                "Rerank": is_rerank,
+                "TopK": k,
                 "Granularity": granularity,
-                "TopK (Chunk)": f"{k} ({chunk_size if granularity == 'chunk' else '-'})",
+                "Chunk": f"{chunk_size}" if granularity == "chunk" else "",
                 "BERTScore": f"{mean_bert:.4f}",
                 "BLEU": f"{mean_bleu:.4f}",
                 "ROUGE-L": f"{mean_rouge:.4f}",
@@ -202,7 +216,6 @@ def evaluate(qna_df, retriever_types, mode, dataset_name, k=10, chunk_size=512, 
 
     return pd.DataFrame(results)
 
-
 def load_config(path: str):
     with open(path, "r") as f:
         return yaml.safe_load(f)
@@ -211,7 +224,8 @@ class Args:
     def __init__(self, config_dict):
         for key, value in config_dict.items():
             setattr(self, key, value)
-    
+
+
 if __name__ == "__main__":
     mp.set_start_method("spawn", force=True)
 
@@ -227,7 +241,6 @@ if __name__ == "__main__":
 
 #  ["llm_wo_knowledge", "llm_contriever", "slm_wo_knowledge", "slm_random", "slm_contriever", "slm_specter", "slm_longformer", "slm_medcpt", "slm_bm25", "slm_rrf2"]
     retriever_types = [
-        "llm_wo_knowledge", "llm_contriever", "slm_wo_knowledge", "slm_random",
         "slm_contriever", "slm_specter", "slm_longformer", "slm_medcpt",
         "slm_bm25", "slm_rrf2"
     ]
@@ -242,12 +255,13 @@ if __name__ == "__main__":
         args.rerank,
     )
 
+    print(f"\nEvaluation Result:")
+    print(results_df.to_markdown(index=False))
+
     os.makedirs("result", exist_ok=True)
 
     timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
     filename = f"{args.dataset}_{args.mode}_{args.k}_{args.chunk_size}_{args.granularity}{'_rerank' if args.rerank else '_'}_{timestamp}.csv"
     filepath = os.path.join("result", filename)
     results_df.to_csv(filepath, index=False)
-
-    print(f"\nEvaluation Result:")
-    print(results_df.to_markdown(index=False))
+    print(f"Results saved to {filepath}")

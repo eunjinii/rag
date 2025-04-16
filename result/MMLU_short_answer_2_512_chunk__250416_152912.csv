@@ -1,0 +1,7 @@
+Retriever,Rerank,TopK,Granularity,Chunk,BERTScore,BLEU,ROUGE-L,F1,EM,Time (s)
+slm_contriever,False,2,chunk,512,0.6115,0.0077,0.0496,0.0387,0.0020,0.1658
+slm_specter,False,2,chunk,512,0.6124,0.0081,0.0528,0.0453,0.0020,0.1630
+slm_longformer,False,2,chunk,512,0.6035,0.0088,0.0526,0.0477,0.0000,0.1773
+slm_medcpt,False,2,chunk,512,0.6101,0.0094,0.0557,0.0486,0.0020,0.1540
+slm_bm25,False,2,chunk,512,0.6154,0.0082,0.0539,0.0463,0.0040,0.1602
+slm_rrf2,False,2,chunk,512,0.6151,0.0095,0.0585,0.0496,0.0040,0.1719
