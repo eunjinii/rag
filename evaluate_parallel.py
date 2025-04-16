@@ -6,9 +6,11 @@ import pandas as pd
 import multiprocessing as mp
 import numpy as np
 import ast 
-import nltk
-nltk.download('punkt_tab')
+import sys
+import signal
+import yaml
 
+from datetime import datetime
 from tqdm import tqdm
 from rouge import Rouge
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
@@ -20,7 +22,6 @@ from dataset import QuestionAnswering
 from prompt_utils import run_simple_prompt, run_rag_chain
 
 # from nltk.tokenize import sent_tokenize
-# _ = sent_tokenize(".") # force initialize punkt tokenizer
 
 VISIBLE_GPUS = list(map(int, os.environ["CUDA_VISIBLE_DEVICES"].split(",")))
 
@@ -32,6 +33,12 @@ smooth_fn = SmoothingFunction().method1
 def truncate_and_decode(text, tokenizer, max_len=512):
     enc = tokenizer(text, truncation=True, max_length=max_len, return_tensors="pt", add_special_tokens=False)
     return tokenizer.decode(enc["input_ids"][0], skip_special_tokens=True)
+
+def handler(signum, frame):
+    raise TimeoutException("Timeout occurred")
+
+class TimeoutException(Exception):
+    pass
 
 def compute_f1_em(pred, gt):
     pred_tokens = pred.strip().split()
@@ -46,9 +53,9 @@ def compute_f1_em(pred, gt):
     return f1, em
 
 
-def evaluate_partition(samples, retriever_type, dataset_name, tokenizer, k, chunk_size, granularity, is_rerank, return_list, gpu_id):
+def evaluate_partition(samples, retriever_type, mode, dataset_name, tokenizer, k, chunk_size, granularity, is_rerank, return_list, gpu_id):
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
-    torch.cuda.set_device(0) 
+    torch.cuda.set_device(0)
     
     slm_model = ChatOllama(model="llama3.2:1b", temperature=0)
     llm_model = ChatOllama(model="gemma:7b", temperature=0)
@@ -65,32 +72,42 @@ def evaluate_partition(samples, retriever_type, dataset_name, tokenizer, k, chun
     else:
         retriever = None
     
+    evaluation_mode = mode
     correct_answers = 0
     scores_list = []
     time_spent = []
-
-    # options 컬럼 타입 보정 (문자열로 되어 있을 경우 파싱)
-    if "options" in samples.columns:
-        if samples["options"].apply(lambda x: isinstance(x, str)).all():
-            samples["options"] = samples["options"].apply(ast.literal_eval)
-
-    evaluation_mode = "multiple_choice" if "options" in samples.columns and samples["options"].apply(lambda x: isinstance(x, list) and len(x) > 0).all() else "sentence"
-    print(f"Evaluation mode: {evaluation_mode}")
 
     for _, sample in (tqdm(samples.iterrows(), total=len(samples), desc=f"GPU{gpu_id}") if gpu_id == VISIBLE_GPUS[0] else samples.iterrows()):
         question = sample["question"].lower()
         options = list(map(str.lower, sample["options"])) if evaluation_mode == "multiple_choice" else None
         gt_answer = sample["answer"].lower()
-
+        
+        if evaluation_mode == "short_answer" and sample["options"] is not None:
+            options = None
+            gt_answer = sample["options"]["abcd".index(gt_answer)]
+        
         start_time = time.time()
-        if retriever_type == "llm_wo_knowledge":
-            pred_answer = run_simple_prompt(llm_model, question, options).lower()
-        elif retriever_type == "llm_contriever":
-            pred_answer = run_rag_chain(llm_model, retriever, question, options, k, is_rerank).lower()
-        elif retriever_type == "slm_wo_knowledge":
-            pred_answer = run_simple_prompt(slm_model, question, options).lower()
-        else:
-            pred_answer = run_rag_chain(slm_model, retriever, question, options, k, is_rerank).lower()
+        
+        try:
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(30)  # timeout in seconds
+
+            if retriever_type == "llm_wo_knowledge":
+                pred_answer = run_simple_prompt(llm_model, question, options).lower()
+            elif retriever_type == "llm_contriever":
+                pred_answer = run_rag_chain(llm_model, retriever, question, options, k, is_rerank).lower()
+            elif retriever_type == "slm_wo_knowledge":
+                pred_answer = run_simple_prompt(slm_model, question, options).lower()
+            else:
+                pred_answer = run_rag_chain(slm_model, retriever, question, options, k, is_rerank).lower()
+
+            signal.alarm(0)  # cancel the alarm
+        except TimeoutException:
+            print(f"[GPU{gpu_id}] Timeout on sample: '{question[:60]}...'")
+            continue
+        except Exception as e:
+            print(f"[GPU{gpu_id}] Error on sample: {e}")
+            continue
         
         end_time = time.time()
         time_spent.append(end_time - start_time)
@@ -99,9 +116,9 @@ def evaluate_partition(samples, retriever_type, dataset_name, tokenizer, k, chun
             if pred_answer in ['a', 'b', 'c', 'd']:
                 correct_answers += int(pred_answer == gt_answer)
         else:
-            # bleu = sentence_bleu([gt_answer.split()], pred_answer.split(), smoothing_function=smooth_fn)
-            # rouge_l = rouge.get_scores(pred_answer, gt_answer)[0]['rouge-l']['f']
-            # f1, em = compute_f1_em(pred_answer, gt_answer)
+            bleu = sentence_bleu([gt_answer.split()], pred_answer.split(), smoothing_function=smooth_fn)
+            rouge_l = rouge.get_scores(pred_answer, gt_answer)[0]['rouge-l']['f']
+            f1, em = compute_f1_em(pred_answer, gt_answer)
             truncated_pred = truncate_and_decode(pred_answer, tokenizer)
             truncated_gt = truncate_and_decode(gt_answer, tokenizer)
             try:
@@ -111,11 +128,11 @@ def evaluate_partition(samples, retriever_type, dataset_name, tokenizer, k, chun
                 bert_score_value = 0.0
 
             scores_list.append({
-                # "BLEU": bleu,
-                # "ROUGE-L": rouge_l,
                 "BERTScore": bert_score_value,
-                # "F1": f1,
-                # "EM": em,
+                "BLEU": bleu,
+                "ROUGE-L": rouge_l,
+                "F1": f1,
+                "EM": em,
             })
 
     return_list.append({
@@ -126,9 +143,8 @@ def evaluate_partition(samples, retriever_type, dataset_name, tokenizer, k, chun
     })
 
 
-def evaluate(qna_df, retriever_types, dataset_name, k=10, chunk_size=512, granularity="chunk", is_rerank=False):
+def evaluate(qna_df, retriever_types, mode, dataset_name, k=10, chunk_size=512, granularity="chunk", is_rerank=False):
     results = []
-    total_samples = len(qna_df)
     num_gpus = len(VISIBLE_GPUS)
     qna_chunks = np.array_split(qna_df, num_gpus)
 
@@ -141,7 +157,7 @@ def evaluate(qna_df, retriever_types, dataset_name, k=10, chunk_size=512, granul
 
         for i in range(num_gpus):
             p = mp.Process(target=evaluate_partition, args=(
-                qna_chunks[i], retriever_type, dataset_name,
+                qna_chunks[i], retriever_type, mode, dataset_name,
                 bert_tokenizer, k, chunk_size, granularity, is_rerank, return_list, VISIBLE_GPUS[i]))
             p.start()
             jobs.append(p)
@@ -155,7 +171,7 @@ def evaluate(qna_df, retriever_types, dataset_name, k=10, chunk_size=512, granul
 
         if eval_mode == "multiple_choice":
             total_correct = sum([r["correct"] for r in return_list])
-            acc = total_correct / total_samples * 100
+            acc = total_correct / len(return_list) * 100
             results.append({
                 "Retriever": retriever_type.upper(),
                 # "Rerank": is_rerank,
@@ -167,22 +183,22 @@ def evaluate(qna_df, retriever_types, dataset_name, k=10, chunk_size=512, granul
             print(f"{retriever_type}, {k}({chunk_size if granularity == 'chunk' else '-'}), Accuracy: {acc:.2f}, Time(s): {avg_time:.4f}")
         else:
             all_scores = sum([r["scores"] for r in return_list], [])
-            # mean_bleu = sum(s["BLEU"] for s in all_scores) / total_samples
-            # mean_rouge = sum(s["ROUGE-L"] for s in all_scores) / total_samples
-            mean_bert = sum(s["BERTScore"] for s in all_scores) / total_samples
-            # mean_f1 = sum(s["F1"] for s in all_scores) / total_samples
-            # mean_em = sum(s["EM"] for s in all_scores) / total_samples
+            mean_bert = sum(s["BERTScore"] for s in all_scores) / len(all_scores)
+            mean_bleu = sum(s["BLEU"] for s in all_scores) / len(all_scores)
+            mean_rouge = sum(s["ROUGE-L"] for s in all_scores) / len(all_scores)
+            mean_f1 = sum(s["F1"] for s in all_scores) / len(all_scores)
+            mean_em = sum(s["EM"] for s in all_scores) / len(all_scores)
 
             results.append({
                 "Retriever": retriever_type.upper(),
                 # "Rerank": is_rerank,
                 "Granularity": granularity,
                 "TopK (Chunk)": f"{k} ({chunk_size if granularity == 'chunk' else '-'})",
-                # "BLEU": f"{mean_bleu:.4f}",
-                # "ROUGE-L": f"{mean_rouge:.4f}",
                 "BERTScore": f"{mean_bert:.4f}",
-                # "F1": f"{mean_f1:.4f}",
-                # "EM": f"{mean_em:.4f}",
+                "BLEU": f"{mean_bleu:.4f}",
+                "ROUGE-L": f"{mean_rouge:.4f}",
+                "F1": f"{mean_f1:.4f}",
+                "EM": f"{mean_em:.4f}",
                 "Time (s)": f"{avg_time:.4f}",
             })
             print(f"{retriever_type}, {k}({chunk_size if granularity == 'chunk' else '-'}), BERTScore: {mean_bert:.4f}, Time(s): {avg_time:.4f}")
@@ -190,30 +206,59 @@ def evaluate(qna_df, retriever_types, dataset_name, k=10, chunk_size=512, granul
     return pd.DataFrame(results)
 
 
+def load_config(path: str):
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
+    
+class Args:
+    def __init__(self, config_dict):
+        for key, value in config_dict.items():
+            setattr(self, key, value)
+    
 if __name__ == "__main__":
     mp.set_start_method("spawn", force=True)
+
+    config = load_config("config/mmlu_sa.yaml")
+    args = Args(config)
     
-    parser = argparse.ArgumentParser(description="Evaluating the model.")
-    parser.add_argument("--dataset", type=str, required=True)
-    parser.add_argument("--k", type=int, default=2)
-    parser.add_argument("--chunk", type=int, default=512)
-    parser.add_argument("--gran", type=str, default="chunk")
-    parser.add_argument("--rerank", action="store_true")
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser(description="Evaluating the model.")
+    # parser.add_argument("--mode", type=str, choices=["multiple_choice", "short_answer"], default="multiple_choice")
+    # parser.add_argument("--dataset", choices=["MedMCQA", "MMLU"], type=str, required=True)
+    # parser.add_argument("--k", type=int, default=2)
+    # parser.add_argument("--chunk", type=int, default=512)
+    # parser.add_argument("--gran", type=str, default="chunk")
+    # parser.add_argument("--rerank", action="store_true")
+    # args = parser.parse_args()
+    
+    if args.gran == "sentence":
+        import nltk
+        nltk.download('punkt_tab')
 
     qna_df = QuestionAnswering(args.dataset).get_question_answering_dataframe()
 
 #  ["llm_wo_knowledge", "llm_contriever", "slm_wo_knowledge", "slm_random", "slm_contriever", "slm_specter", "slm_longformer", "slm_medcpt", "slm_bm25", "slm_rrf2"]
-    retriever_types = ["slm_random", "slm_contriever", "slm_specter"]
+    retriever_types = [
+        "llm_wo_knowledge", "llm_contriever", "slm_wo_knowledge", "slm_random",
+        "slm_contriever", "slm_specter", "slm_longformer", "slm_medcpt",
+        "slm_bm25", "slm_rrf2"
+    ]
     results_df = evaluate(
         qna_df,
         retriever_types,
+        args.mode,
         args.dataset,
         args.k,
         args.chunk,
         args.gran,
-        args.rerank
+        args.rerank,
     )
+
+    os.makedirs("result", exist_ok=True)
+
+    timestamp = datetime.now().strftime("%y%m%d_%H%M%S")
+    filename = f"{args.dataset}_{args.mode}_{args.k}_{args.chunk}_{args.gran}{'_rerank' if args.rerank else '_'}_{timestamp}.csv"
+    filepath = os.path.join("result", filename)
+    results_df.to_csv(filepath, index=False)
 
     print(f"\nEvaluation Result:")
     print(results_df.to_markdown(index=False))
