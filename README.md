@@ -15,10 +15,10 @@ Concise Knowledge-Guided Retrieval-Augmented Generation (RAG) enhances response 
 ### 2. Run Evaluation on a Single GPU
    ```bash
    pip install -r requirements.txt
-   python evaluate.py --dataset MedMCQA --k 2 --chunk 512
+   python evaluate.py
    ```
 
 ### 3. Run Evaluation with Multi-GPU Parallelism
    ```bash
-   python evaluate_parallel.py --dataset MedMCQA --k 2 --chunk 512
+   python evaluate_parallel.py
    ```
